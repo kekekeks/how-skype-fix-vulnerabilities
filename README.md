@@ -1,0 +1,1 @@
+# how-skype-fix-vulnerabilities
