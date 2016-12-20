@@ -1,39 +1,36 @@
-# Как Skype уязвимости чинил
+# How Skype fixes security vulnerabilities
 
 ![](https://habrastorage.org/files/09a/f14/e02/09af14e02e2b40178b7f543e83707803.png)
 
-### Короткий ответ: никак, им пофиг.
+### In a nutshell: they don't
 
-В статье описываются мои безуспешные попытки убедить сотрудников Microsoft, что их сервис уязвим, а также унижения, которые приходится выносить пользователям Skype. Под катом невежество, боль и отчаяние.
+This post describes my fruitless effort to convience Microsoft employees that their service is vulnerable, and humiliation one has to go through should one's account be blocked by a hacker. This is a story of ignorance, pain and despair.
 
 #### TL;DR
 
-* Любой может заблокировать ваш аккаунт навсегда так, что вы больше не сможете им пользоваться. Для этого достаточно знать только имя аккаунта. В большинстве случаев Skype откажет вам в восстановлении доступа. Microsoft знает об этой проблеме несколько лет.
+* *Anyone* can block your account permanently and you can't do anything about it. The only thing that's a hacker needs to know is your Skype login. In most cases Skype will refuse to unblock your account. Microsoft have known about the probem for years.
 
-* Механизм генерации восьмизначных одноразовых кодов аутентификации (Microsoft Security Code), которые используются для восстановления пароля к аккаунту Microsoft, уязвим. Атакующий может угадать код.
+* 8-digit  authentication code (Microsoft Security Code) generation algorithm is vulnerable. These codes are used for password restore and the hacker can just guess the code without having access to your email account.
 
-* Техподдержка Skype уязвима для атак социальной инженерии. Microsoft считает это нормальным.
+* Skype tech support is vulnerable to social engineering and Microsoft is perfectly OK with that.
 
-* Техподдержка Skype не знает, что на самом деле происходит с вашим аккаунтом, и почему он заблокирован. В любом случае вы получите стандартный ответ, что ваш аккаунт заблокирован за нарушение правил, даже если аккаунт был удален по вашему запросу.
+* Skype tech support doesn't even know what's going on with your account and why it was blocked in the first place. Regardless of the reason you'll get a standard response that your account was blocked for "violating terms and conditions" even if it was you who clicked "Block account" button in their web interface.
 
-* Skype по-прежнему раскрывает ваш IP-адрес, в том числе и локальный (тот, что на сетевом интерфейсе). В некоторых случаях возможно раскрытие контактов, подключенных с того же внешнего IP-адреса, что и вы. Например, членов семьи, подключенных к домашнему роутеру.
+* Skype still disclosures your public and private IP addresses, in some cases it's possible to disclosure other contacts that are using the same network (e. g. your family members using same Wi-Fi)
 
-* Атакующий может скрыть активную сессию из списка авторизованных клиентов (команда /showplaces) используя старые версии SDK. Таким образом, зная пароль, можно незаметно просматривать переписку жертвы.
+* A hacker can hide an active Skype session from the session list (it's available via /showplaces command) using old SDK versions. That allows to stealthly read your messages if one have managed to obtain your password.
 
-### Обо мне
+### About me
 
-Я пользуюсь скайпом около десяти лет. Раньше я мог назвать себя настоящим фанбоем скайпа.
-Когда был доступен публичный баг-трекер jira.skype.com, я активно пытался улучшить Skype, рапортовал о багах. 
+I've been using Skype for 10 years. I'm used to be a Skype fanboy. When jira.skype.com (Skype's public bug tracker) was still available, I've been trying to improve skype and reporting bugs. 
 
-Например, SCW-2778 Remote DoS exploit. Эта уязвимость позволяла удаленно обрушить десктопную версию Skype для Windows так, что программа не запускалась без очистки истории.
+SCW-2778 Remote DoS exploit for example. That vulnerability allowed to crash desktop version of Skype, so one couldn't without clearing history. Or SCW-3328 that allowed to remotely turn on your muted microphone during the call.
 
-Или SCW-3328, которая позволяла удаленно включить отключенный микрофон во время звонка.
+Even at that time I was worried by Skype's approach to fixing bugs. I had to literally beg developers to fix a problem that was there for years.
 
-Уже тогда Skype настораживал своим подходом к исправлению багов. Мне приходилось буквально умолять разработчиков исправить проблему, которую не могли починить годами! Вот как это выглядело.
+I was using all Skype's products, developer instruments (Skype4COM, SkypeKit), premium-subscriptions, Skype For Business. I have created bots, custom emoticon generation service, etc.
 
-Я пользовался всеми продуктами Skype, инструментами для разработки Skype4Com, Skypekit. Покупал premium-подписки. Продвинул на работе идею купить Skype For Business. Писал ботов, сервис для генерации собственных смайлов и т.д.
-
-Но сегодня могу сказать, что я искренне ненавижу Skype. Это отвратительный сервис, погрязший в бюрократии и невежестве сотрудников, абсолютно игнорирующий проблемы и занятый только созданием 3D Видеосмайлов. На сегодняшний день Skype не просто не безопасен, он представляет угрозу для пользователей, потому что его механизмы обеспечения безопасности не работают.
+But today I sincerely hate Skype. It's a horrible service drown in bureucracy and ignorance of employees, that ignores the real problems and adds 3D emoticons as a major feature. Today Skype is not only insecure, but hazardous to its users, since security procedures are not only inefficient, they are working against users.
 
 ### Хронология событий
 
